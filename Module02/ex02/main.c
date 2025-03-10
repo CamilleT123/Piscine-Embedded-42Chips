@@ -38,8 +38,6 @@
 // 1 or 2 stop bits
 
 // #define F_CPU 16000000UL  // Fréquence du microcontrôleur (16 MHz)
-#define BAUD 115200
-#define UBRR ((F_CPU / (16 * BAUD)))  // Calcul du UBRR table 20-1 page 182 - sinon valeur page 196 table 20-4
 // U2Xn (Universal Double Speed) dans le registre UCSRnA: 0 = normal, 1 = double
 
 // USART Baud Rate Registers = UBRR - page 204 section 20.11.5
@@ -69,40 +67,38 @@
 // 1	RXB8	Bit de données reçues 8ème (9 bits de données) : Utilisé pour les données 9 bits, ce bit contient le 9e bit lors de la réception.
 // 0	TXB8	Bit de données transmises 8ème (9 bits de données) : Utilisé pour les données 9 bits, ce bit contient le 9e bit lors de la transmission.
 
+// Calcul du UBRR table 20-1 page 182 - sinon valeur page 196 table 20-4
 
-void uart_init(){ //initializes the UART
-    /*Set baud rate */
-    UBRR0H = (unsigned char)(UBRR >> 8); // = 0
-    UBRR0L = (unsigned char)UBRR; // = 8
-
-    /*Enable transmitter and recepter*/
-    UCSR0B = (1<<TXEN0)| (1 << RXEN0);
-    /* Set frame format: 8data, 2stop bit */
-    // UCSR0C = (1<<USBS0)|(3<<UCSZ00);
-
-    // pour  8 bits, pas de parité, 1 bit de stop (8N1) :
-    // UCSZ01:0 = charactere size si 1 1 et UCSZn2 in UCSRnB = 0 alors 8 bits
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
-}
-
-char uart_rx(void){
-    /* Wait for data to be received */
-    while ( !(UCSR0A & (1<<RXC0)));
-    /* Get and return received data from buffer */
-    return UDR0;
-}
-// Cette fonction va charger le caractère à transmettre dans le registre de données de l'UART
-//  et s'assurer que la transmission se fait correctement.
-void uart_tx(char c){ //writes a character to the PC serial port / code frin 20.6.1 page 186
-    while (!(UCSR0A & (1 << UDRE0)));  // Attendre que le buffer soit prêt
-    // Le bit UDRE0 dans le registre UCSR0A indique si le buffer de transmission (UDR0) 
+// Le bit UDRE0 dans le registre UCSR0A indique si le buffer de transmission (UDR0) 
     // est prêt à recevoir un nouveau caractère.
     // UCSR0A est un registre qui contient plusieurs bits d'état et de contrôle pour l'UART, 
     // et UDRE0 est un bit qui devient 1 lorsque le buffer de transmission est vide, 
     // c'est-à-dire prêt à recevoir de nouvelles données.
     // while attend que UDRE0 passe a 1
-    UDR0 = c;  // Envoyer le caractère
     // UDR0 (USART Data Register 0) est un registre spécial pour transmettre et recevoir des données via le module USART
+
+#define BAUD 115200
+
+void uart_init(){ //initializes the UART
+    int ubrr = (F_CPU / (16 * BAUD) - 1);
+
+    UBRR0H = ((ubrr + 1 ) >> 8);            // includes the 8 most significant bits of UBRR into the Register = 0 
+    UBRR0L = (ubrr + 1 );                   // includes the 8 less significant bits of UBRR into the Register = 8
+
+    UCSR0B = (1<<TXEN0)| (1 << RXEN0);      //Enable transmitter and recepter*/
+    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00); // pour  8 bits, pas de parité, 1 bit de stop (8N1) :
+}
+
+char uart_rx(void){
+    while ( !(UCSR0A & (1<<RXC0)));         // wait for data
+    return UDR0;
+}
+
+void uart_tx(char c){ //writes a character to the PC serial port / code frin 20.6.1 page 186
+    while (!(UCSR0A & (1 << UDRE0)));       // Attendre que le buffer soit prêt
+    
+    UDR0 = c;                               // Envoyer le caractère
+    
 }
 
 int main(){
