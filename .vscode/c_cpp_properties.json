@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "AVR",
+            "includePath": [
+                "/usr/lib/avr/include",
+                "/usr/local/avr/include"
+            ],
+            "compilerPath": "/usr/bin/avr-gcc",
+            "intelliSenseMode": "gcc-x64",
+            "cStandard": "c99",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
