@@ -113,7 +113,6 @@ char echo(char c){
 ISR(USART_RX_vect){
     char received_char = UDR0;
     uart_tx(echo(received_char));
-    
 }
 
 int main(){
