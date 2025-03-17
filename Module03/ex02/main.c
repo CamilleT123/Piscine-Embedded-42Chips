@@ -28,13 +28,13 @@ en fonction des valeurs de couleur que nous souhaitons afficher.
 void init_rgb(){ //initializes the timers
     DDRD |= (1 << PD3) | (1 << PD5) | (1 << PD6);   // as output
 
-    TCCR0A = (1 << WGM00) | (1 << WGM01);  // sets FastPWM
-    TCCR0A |= (1 << COM0A1) | (1 << COM0B1); // Set OC0A and OC0B on Compare Match, set OC0B at BOTTOM (non-inverting mode).
-    TCCR0B = (1 << CS01); // no prescaler
+    TCCR0A = (1 << WGM00) | (1 << WGM01);       // sets FastPWM
+    TCCR0A |= (1 << COM0A1) | (1 << COM0B1);    // Set OC0A and OC0B on Compare Match, set OC0B at BOTTOM (non-inverting mode).
+    TCCR0B = (1 << CS01);                       // no prescaler
 
     TCCR2A = (1 << WGM21) | (1 << WGM20);
     TCCR2A |= (1 << COM2B1) ;
-    TCCR2B = (1 << CS20); // no prescaler (Table 16-5 page 143)
+    TCCR2B = (1 << CS20);                       // no prescaler (Table 16-5 page 143)
 
 }
 

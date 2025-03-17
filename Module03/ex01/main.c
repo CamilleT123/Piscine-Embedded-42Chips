@@ -34,12 +34,3 @@ int main(){
     }
     return 0;
 }
-//   // Pour activer le CTC mode, on configure WGM12 dans TCCR1B - voir table 16-4 page 141
-//   TCCR1B |= (1 << WGM12);
-  
-//   OCR1A = 62499;
-//   TCCR1B |= (1 << CS12);
-
-//   // pour allumer la LED sans utiliser PORT: Toggle OC1A on compare match - table 16-1 page 140
-//   // table 14-3 page 91 pour voir que OC1A est alternate function de PB1
-//   TCCR1A |= (1 << COM1A0);
